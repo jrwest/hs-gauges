@@ -1,26 +1,34 @@
 module Main (main) where
 
 import Guages.CLI.Credentials (credentialPath,
-                               readCredential)
+                               readCredential,
+                               validateCredential,
+                               writeCredential)
+import Guages.API.Client (Client, createClient)  
 import System.Directory (doesFileExist)
 
 main = do
-  cred <- readCred
-  putStrLn cred
+  cred <- readClient
+  putStrLn $ show cred
 
-readCred :: IO String
-readCred = do
+-- this is pretty disgusting me thinks?
+readClient :: IO Client 
+readClient = do
   credsPath <- credentialPath
   hasCreds <- doesFileExist credsPath              
   if hasCreds
-    then (putStrLn $ "Using credential from " ++ credsPath) >> readCredential credsPath
-    else newCred         
+    then (putStrLn $ "Using credential from " ++ credsPath) >> readCredential credsPath >>= return . createClient
+    else newAndValidate
+    where
+      newAndValidate :: IO Client
+      newAndValidate = newClient >>= validateCredential >>= \mbC -> case mbC of 
+        Just cl -> writeCredential cl >> return cl
+        Nothing -> (putStrLn "invalid API Key") >>  newAndValidate
             
          
-newCred :: IO String          
-newCred = do
-  putStrLn $ "Welcome to Guages"
-  putStrLn $ "Please enter your API key: "
+newClient :: IO String
+newClient = do
+  putStrLn $ "You have not setup an API Key. Please enter one: "
   getLine  
          
          

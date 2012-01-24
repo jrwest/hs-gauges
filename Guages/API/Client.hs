@@ -1,6 +1,6 @@
 module Guages.API.Client       
        (
-           Client,
+           Client(token),
            GuagesToken,
            toToken,
            fromToken,
