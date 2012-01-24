@@ -44,6 +44,8 @@ startAuthorized command = do
 startInteractive :: IO ()
 startInteractive = do
   client <- readClient
+  sayLine "Welcome to Gauges Haskell CLI"
+  sayLine "type \"help\" and press ENTER to see what's up"
   runInteractive client                  
   
 endInteractive :: IO ()  
