@@ -4,10 +4,11 @@ module Guages.API.Resources
          Resource,
          ResourceName,
          ResourceId,
-         gauges,
-         gauge,
-         clients,
-         client
+         gaugesR,
+         gaugeR,
+         clientsR,
+         clientR,
+         meR
        ) where
 
 
@@ -21,17 +22,20 @@ data Resource = Resource ResourceCollection ResourceId deriving (Show,Eq)
 type ResourceName = String
 type ResourceId = String
 
-gauges :: ResourceCollection
-gauges = ResourceCollection "gauges"
+meR :: ResourceCollection
+meR = ResourceCollection "me"
 
-clients :: ResourceCollection
-clients = ResourceCollection "clients"
+gaugesR :: ResourceCollection
+gaugesR = ResourceCollection "gauges"
 
-gauge :: ResourceId -> Resource
-gauge id = Resource gauges id
+clientsR :: ResourceCollection
+clientsR = ResourceCollection "clients"
 
-client :: ResourceId -> Resource
-client id = Resource clients id
+gaugeR :: ResourceId -> Resource
+gaugeR id = Resource gaugesR id
+
+clientR :: ResourceId -> Resource
+clientR id = Resource clientsR id
 
 -- Requestable Instances
 instance Requestable ResourceCollection where
