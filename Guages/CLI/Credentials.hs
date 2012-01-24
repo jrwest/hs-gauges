@@ -16,6 +16,7 @@ credentialPath = do
     baseDir <- getHomeDirectory
     return $ baseDir ++ "/" ++ credentialFileName
 
+-- this funciton may error
 readCredential :: String -> IO Client
 readCredential path = do
   fileContents <- readFile path
