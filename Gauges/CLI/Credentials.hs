@@ -1,4 +1,4 @@
-module Guages.CLI.Credentials 
+module Gauges.CLI.Credentials 
        (
          credentialPath,
          readCredential,
@@ -7,8 +7,8 @@ module Guages.CLI.Credentials
        ) where
 
 import System.Directory (getHomeDirectory)
-import Guages.API.Client (Client, token, fromToken, getResponse, createClient)
-import Guages.API.Resources (meR)
+import Gauges.API.Client (Client, token, fromToken, getResponse, createClient)
+import Gauges.API.Resources (meR)
 import Network.Curl.Code (CurlCode(..))
   
 credentialPath :: IO String

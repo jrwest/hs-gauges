@@ -1,7 +1,7 @@
-module Guages.API.Client       
+module Gauges.API.Client       
        (
            Client(token),
-           GuagesToken,
+           GaugesToken,
            toToken,
            fromToken,
            createClient,
@@ -9,17 +9,17 @@ module Guages.API.Client
            getResponseVerbose
        ) where
 
-import Guages.API.Requestable (Requestable(..), Fetchable(..))
-import Guages.API.Resources (ResourceCollection, Resource)
+import Gauges.API.Requestable (Requestable(..), Fetchable(..))
+import Gauges.API.Resources (ResourceCollection, Resource)
 import Network.Curl (curlGetString, withCurlDo)
 import Network.Curl.Code (CurlCode(..))
 import Network.Curl.Opts (CurlOption(..))                     
 
 data Client = Client {
-    token :: GuagesToken
+    token :: GaugesToken
   } deriving (Show, Eq)             
 
-newtype GuagesToken = GuagesToken String 
+newtype GaugesToken = GaugesToken String 
                     deriving (Show, Eq)
 
 
@@ -55,11 +55,11 @@ gaugesHeader c = gaugesHeaderName ++ ": " ++ (fromToken $ token c)
 createClient :: String -> Client
 createClient = Client . toToken 
 
-toToken :: String -> GuagesToken
-toToken = GuagesToken
+toToken :: String -> GaugesToken
+toToken = GaugesToken
 
-fromToken :: GuagesToken -> String
-fromToken (GuagesToken s) = s
+fromToken :: GaugesToken -> String
+fromToken (GaugesToken s) = s
        
        
 

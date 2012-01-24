@@ -1,4 +1,4 @@
-Name:            Guages
+Name:            Gauges
 Version:         0.0.0
 Build-Type:      Simple
 Cabal-Version:   >= 1.2
@@ -7,9 +7,9 @@ License-File:    LICENSE
 License:         MIT
 
 library 
-  exposed-modules: Guages.API.Resources
-                   Guages.API.Client
-                   Guages.API.Requestable
+  exposed-modules: Gauges.API.Resources
+                   Gauges.API.Client
+                   Gauges.API.Requestable
   build-depends:   base, directory, haskell98, curl == 1.3.7		  		 
 
 Executable gauges

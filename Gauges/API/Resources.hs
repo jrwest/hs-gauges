@@ -1,4 +1,4 @@
-module Guages.API.Resources
+module Gauges.API.Resources
        ( 
          ResourceCollection,
          Resource,
@@ -12,7 +12,7 @@ module Guages.API.Resources
        ) where
 
 
-import Guages.API.Requestable
+import Gauges.API.Requestable
 
 newtype ResourceCollection = ResourceCollection ResourceName deriving (Show,Eq)
 

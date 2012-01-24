@@ -1,11 +1,11 @@
 module Main (main) where
 
-import Guages.CLI.Credentials (credentialPath,
+import Gauges.CLI.Credentials (credentialPath,
                                readCredential,
                                validateCredential,
                                writeCredential)
-import Guages.API.Client (Client, createClient, getResponse)  
-import Guages.API.Resources (gaugesR)
+import Gauges.API.Client (Client, createClient, getResponse)  
+import Gauges.API.Resources (gaugesR)
 import System.Directory (doesFileExist)
 import System (getArgs)
 import Network.Curl.Code (CurlCode(..))

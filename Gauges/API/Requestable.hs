@@ -1,4 +1,4 @@
-module Guages.API.Requestable 
+module Gauges.API.Requestable 
        (
          Requestable(..),
          Fetchable(..)         
