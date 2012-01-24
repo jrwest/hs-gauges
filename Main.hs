@@ -4,6 +4,7 @@ import Gauges.CLI.Credentials (credentialPath,
                                readCredential,
                                validateCredential,
                                writeCredential)
+import Gauges.CLI.Interact (sayLine, saysLine, say, ask)
 import Gauges.API.Client (Client, createClient, getResponse)  
 import Gauges.API.Resources (gaugesR)
 import System.Directory (doesFileExist)
@@ -29,11 +30,11 @@ runAuthorized command = do
 listCommand :: Client -> IO ()  
 listCommand c = do  
   (res,resp) <- getResponse c gaugesR
-  case res of 
-    CurlOK -> putStrLn resp
-    _      -> putStrLn "Failed to download information about gauges."
+  say $ case res of 
+    CurlOK ->  resp
+    _      -> "Failed to download information about gauges."
 
-help = putStrLn "USAGE: gauges [COMMAND]"
+help = say "USAGE: gauges [COMMAND]"
   
 
 -- this is pretty disgusting me thinks?
@@ -42,19 +43,18 @@ readClient = do
   credsPath <- credentialPath
   hasCreds <- doesFileExist credsPath              
   if hasCreds
-    then (putStrLn $ "Using credential from " ++ credsPath) >> readCredential credsPath
+    then (saysLine ["Using credential from", credsPath]) >> readCredential credsPath
     else newAndValidate
     where
       newAndValidate :: IO Client
       newAndValidate = newClient >>= validateCredential >>= \mbC -> case mbC of 
         Just cl -> writeCredential cl >> return cl
-        Nothing -> (putStrLn "invalid API Key") >>  newAndValidate
+        Nothing -> (say "invalid API Key") >>  newAndValidate
             
          
 newClient :: IO String
 newClient = do
-  putStrLn $ "You have not setup an API Key. Please enter one: "
-  getLine  
+  ask "You have not setup an API Key. Please enter one: "
          
          
      
