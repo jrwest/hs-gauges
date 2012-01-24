@@ -4,7 +4,7 @@ import Gauges.CLI.Credentials (credentialPath,
                                readCredential,
                                validateCredential,
                                writeCredential)
-import Gauges.CLI.Interact (sayLine, saysLine, say, ask)
+import Gauges.CLI.Interact (sayLine, saysLine, say, ask, prompt)
 import Gauges.API.Client (Client, createClient, getResponse)  
 import Gauges.API.Resources (gaugesR)
 import System.Directory (doesFileExist)
@@ -17,15 +17,37 @@ main = do
     ["--help"]  -> help
     ["-h"]      -> help
     ["help"]    -> help
-    []          -> help
-    command     -> runAuthorized command
-  
-runAuthorized :: [String] -> IO ()
-runAuthorized command = do
-  client <- readClient
+    []          -> startInteractive
+    command     -> startAuthorized command
+    
+runAuthorized :: Client -> [String] -> IO () -> IO ()
+runAuthorized cl command help = do
   case command of 
-    ["list"] -> listCommand client
+    ["list"] -> listCommand cl
     _        -> help
+    
+runInteractive :: Client -> IO ()
+runInteractive cl = do
+  command <- prompt  
+  case command of
+    ["quit"] -> endInteractive
+    ["q"]    -> endInteractive
+    ["help"] -> interactiveHelp >> runInteractive cl 
+    []       -> runInteractive cl
+    _        -> runAuthorized cl command interactiveHelp >> runInteractive cl    
+  
+startAuthorized :: [String] -> IO ()  
+startAuthorized command = do                   
+  cl <- readClient
+  runAuthorized cl command help
+
+startInteractive :: IO ()
+startInteractive = do
+  client <- readClient
+  runInteractive client                  
+  
+endInteractive :: IO ()  
+endInteractive = sayLine "Goodbye!"      
   
 listCommand :: Client -> IO ()  
 listCommand c = do  
@@ -34,7 +56,9 @@ listCommand c = do
     CurlOK ->  resp
     _      -> "Failed to download information about gauges."
 
-help = say "USAGE: gauges [COMMAND]"
+help = sayLine "USAGE: gauges [COMMAND]"
+
+interactiveHelp = say "This would be where the interactive mode help goes"
   
 
 -- this is pretty disgusting me thinks?

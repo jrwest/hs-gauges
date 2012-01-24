@@ -23,6 +23,7 @@ say s = do
 ask :: String -> IO String  
 ask q = do 
   say q
-  getLine
+  getLine  
   
-prompt = ask "> "  
+prompt :: IO [String]  
+prompt = fmap words (ask "\n> ")
