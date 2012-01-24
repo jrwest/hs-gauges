@@ -10,7 +10,8 @@ library
   exposed-modules: Gauges.API.Resources
                    Gauges.API.Client
                    Gauges.API.Requestable
-  build-depends:   base, directory, haskell98, curl == 1.3.7		  		 
+                   Gauges.API.Data
+  build-depends:   base, directory, haskell98, curl == 1.3.7, json == 0.5		  		 
 
 Executable gauges
   Main-Is:        Main.hs
