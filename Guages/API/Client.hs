@@ -10,7 +10,7 @@ module Guages.API.Client
        ) where
 
 import Guages.API.Requestable (Requestable(..), Fetchable(..))
-import Guages.API.Resources (ResourceCollection, Resource, gauges, clients, gauge, client)
+import Guages.API.Resources (ResourceCollection, Resource)
 import Network.Curl (curlGetString, withCurlDo)
 import Network.Curl.Code (CurlCode(..))
 import Network.Curl.Opts (CurlOption(..))                     
