@@ -17,7 +17,7 @@ readClient = do
   credsPath <- credentialPath
   hasCreds <- doesFileExist credsPath              
   if hasCreds
-    then (putStrLn $ "Using credential from " ++ credsPath) >> readCredential credsPath >>= return . createClient
+    then (putStrLn $ "Using credential from " ++ credsPath) >> readCredential credsPath
     else newAndValidate
     where
       newAndValidate :: IO Client

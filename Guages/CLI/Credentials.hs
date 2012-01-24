@@ -16,13 +16,13 @@ credentialPath = do
     baseDir <- getHomeDirectory
     return $ baseDir ++ "/" ++ credentialFileName
 
-readCredential :: String -> IO String
+readCredential :: String -> IO Client
 readCredential path = do
   fileContents <- readFile path
   return $ cred fileContents
   where
-    cred [] = ""
-    cred cs = head $ lines cs
+    cred [] = createClient ""
+    cred cs = createClient $ head $ lines cs
     
 writeCredential :: Client -> IO ()
 writeCredential c = credentialPath >>= (flip writeFile $ (fromToken . token $ c))
