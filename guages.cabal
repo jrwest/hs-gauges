@@ -1,0 +1,17 @@
+Name:            Guages
+Version:         0.0.0
+Build-Type:      Simple
+Cabal-Version:   >= 1.2
+Author:          Jordan West
+License-File:    LICENSE
+License:         MIT
+
+library 
+  exposed-modules: Guages.API.Resources
+                   Guages.API.Client
+                   Guages.API.Requestable
+  build-depends:   base, curl == 1.3.7		  		 
+
+Executable gauges
+  Main-Is:        Main.hs
+  Hs-Source-Dirs: .
