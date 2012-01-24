@@ -4,12 +4,37 @@ import Guages.CLI.Credentials (credentialPath,
                                readCredential,
                                validateCredential,
                                writeCredential)
-import Guages.API.Client (Client, createClient)  
+import Guages.API.Client (Client, createClient, getResponse)  
+import Guages.API.Resources (gaugesR)
 import System.Directory (doesFileExist)
+import System (getArgs)
+import Network.Curl.Code (CurlCode(..))
 
 main = do
-  cred <- readClient
-  putStrLn $ show cred
+  args <- getArgs
+  case args of 
+    ["--help"]  -> help
+    ["-h"]      -> help
+    ["help"]    -> help
+    []          -> help
+    command     -> runAuthorized command
+  
+runAuthorized :: [String] -> IO ()
+runAuthorized command = do
+  client <- readClient
+  case command of 
+    ["list"] -> listCommand client
+    _        -> help
+  
+listCommand :: Client -> IO ()  
+listCommand c = do  
+  (res,resp) <- getResponse c gaugesR
+  case res of 
+    CurlOK -> putStrLn resp
+    _      -> putStrLn "Failed to download information about gauges."
+
+help = putStrLn "USAGE: gauges [COMMAND]"
+  
 
 -- this is pretty disgusting me thinks?
 readClient :: IO Client 
