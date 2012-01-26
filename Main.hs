@@ -1,5 +1,7 @@
 module Main (main) where
 
+-- this file really needs cleaning up and things moved out of it
+
 import Gauges.CLI.Credentials (credentialPath,
                                readCredential,
                                validateCredential,
@@ -7,9 +9,11 @@ import Gauges.CLI.Credentials (credentialPath,
 import Gauges.CLI.Interact (sayLine, saysLine, say, ask, prompt)
 import Gauges.API.Client (Client, createClient, getResponse)  
 import Gauges.API.Resources (gaugesR)
+import Gauges.API.Data (GaugesSummary)
 import System.Directory (doesFileExist)
 import System (getArgs)
 import Network.Curl.Code (CurlCode(..))
+import Text.JSON (Result, decode)
 
 main = do
   args <- getArgs
@@ -55,7 +59,7 @@ listCommand :: Client -> IO ()
 listCommand c = do  
   (res,resp) <- getResponse c gaugesR
   say $ case res of 
-    CurlOK ->  resp
+    CurlOK ->  show (decode resp :: Result GaugesSummary)
     _      -> "Failed to download information about gauges."
 
 help = sayLine "USAGE: gauges [COMMAND]"
