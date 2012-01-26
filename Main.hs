@@ -7,6 +7,7 @@ import Gauges.CLI.Credentials (credentialPath,
                                validateCredential,
                                writeCredential)
 import Gauges.CLI.Interact (sayLine, saysLine, say, ask, prompt)
+import Gauges.CLI.Display (Displayable(..), displayResult)
 import Gauges.API.Client (Client, createClient, getResponse)  
 import Gauges.API.Resources (gaugesR)
 import Gauges.API.Data (GaugesSummary)
@@ -59,7 +60,7 @@ listCommand :: Client -> IO ()
 listCommand c = do  
   (res,resp) <- getResponse c gaugesR
   say $ case res of 
-    CurlOK ->  show (decode resp :: Result GaugesSummary)
+    CurlOK ->  displayResult (decode resp :: Result GaugesSummary)
     _      -> "Failed to download information about gauges."
 
 help = sayLine "USAGE: gauges [COMMAND]"
