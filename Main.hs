@@ -8,6 +8,7 @@ import Gauges.CLI.Credentials (credentialPath,
                                writeCredential)
 import Gauges.CLI.Interact (sayLine, saysLine, say, ask, prompt)
 import Gauges.CLI.Display (Displayable(..), displayResult)
+import Gauges.CLI.Help (help, interactiveHelp, unknownCmd)
 import Gauges.API.Client (Client, createClient, getResponse)  
 import Gauges.API.Resources (gaugesR)
 import Gauges.API.Data (GaugesSummary)
@@ -19,17 +20,17 @@ import Text.JSON (Result, decode)
 main = do
   args <- getArgs
   case args of 
-    ["--help"]  -> help
-    ["-h"]      -> help
-    ["help"]    -> help
+    ["--help"]  -> sayLine help
+    ["-h"]      -> sayLine help
+    ["help"]    -> sayLine help
     []          -> startInteractive
     command     -> startAuthorized command
     
-runAuthorized :: Client -> [String] -> IO () -> IO ()
+runAuthorized :: Client -> [String] -> String -> IO ()
 runAuthorized cl command help = do
   case command of 
     ["list"] -> listCommand cl
-    _        -> help
+    _        -> sayLine help
     
 runInteractive :: Client -> IO ()
 runInteractive cl = do
@@ -37,9 +38,9 @@ runInteractive cl = do
   case command of
     ["quit"] -> endInteractive
     ["q"]    -> endInteractive
-    ["help"] -> interactiveHelp >> runInteractive cl 
+    ["help"] -> (say interactiveHelp) >> runInteractive cl 
     []       -> runInteractive cl
-    _        -> runAuthorized cl command interactiveHelp >> runInteractive cl    
+    _        -> runAuthorized cl command unknownCmd >> runInteractive cl    
   
 startAuthorized :: [String] -> IO ()  
 startAuthorized command = do                   
@@ -54,7 +55,7 @@ startInteractive = do
   runInteractive client                  
   
 endInteractive :: IO ()  
-endInteractive = sayLine "Goodbye!"      
+endInteractive = sayLine "Godbye!"      
   
 listCommand :: Client -> IO ()  
 listCommand c = do  
@@ -62,10 +63,6 @@ listCommand c = do
   say $ case res of 
     CurlOK ->  displayResult (decode resp :: Result GaugesSummary)
     _      -> "Failed to download information about gauges."
-
-help = sayLine "USAGE: gauges [COMMAND]"
-
-interactiveHelp = say "This would be where the interactive mode help goes"
   
 
 -- this is pretty disgusting me thinks?
