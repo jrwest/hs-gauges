@@ -76,14 +76,6 @@ listCommand c = do
         return res
         
         
---    where 
---      writeSummaryAsCache :: GaugesSummary -> IO GaugesSummary
---      writeSummaryAsCache gs = do
---        writeGaugeCache $ map (\t -> (title t, id t)) (summary gs)
---        return gs
-
-  
-
 -- this is pretty disgusting me thinks?
 readClient :: IO Client 
 readClient = do
