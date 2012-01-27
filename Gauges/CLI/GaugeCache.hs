@@ -6,6 +6,7 @@ module Gauges.CLI.GaugeCache
 
 import System.IO.Error (catch)
 import System.Directory (getHomeDirectory)
+import Data.Char (toLower)
 
 
 type GaugeCacheInfo = [(String, String)]
@@ -28,8 +29,22 @@ writeGaugeCache cacheInfo = do
     cacheLine :: (String,String) -> String
     cacheLine (title,id) = title ++ ":" ++ id
     
---readGaugeCache :: IO (Maybe GaugeCacheInfo)
---readGaugeCache = do
---  path <- gaugeCachePath
---  contents <- catch (readFile path) (\_ -> return Nothing)
+        
+readGaugeId :: String -> IO (Maybe String)
+readGaugeId name = do                                   
+  cache <- readGaugeCache
+  return $ lookup (map toLower name) cache
+    
+readGaugeCache :: IO [(String,String)]
+readGaugeCache = do
+  path <- gaugeCachePath  
+  contents <- catch (readFile path) (\_ -> return "")
+  return $ parseGaugeCache $ lines contents
+  
+parseGaugeCache :: [String] -> GaugeCacheInfo
+parseGaugeCache xs = map parseCacheLine xs
+  
+parseCacheLine s = (map toLower key, value)  
+  where
+    (key,_:value) = break (==':') s
   
