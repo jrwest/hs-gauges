@@ -9,13 +9,14 @@ import Gauges.CLI.Credentials (credentialPath,
 import Gauges.CLI.Interact (sayLine, saysLine, say, ask, prompt)
 import Gauges.CLI.Display (Displayable(..), displayResult)
 import Gauges.CLI.Help (help, interactiveHelp, unknownCmd)
+import Gauges.CLI.GaugeCache (writeGaugeCache)
 import Gauges.API.Client (Client, createClient, getResponse)  
 import Gauges.API.Resources (gaugesR)
-import Gauges.API.Data (GaugesSummary)
+import Gauges.API.Data (GaugesSummary(summary), GaugeSummary(title,gaugeId))
 import System.Directory (doesFileExist)
 import System (getArgs)
 import Network.Curl.Code (CurlCode(..))
-import Text.JSON (Result, decode)
+import Text.JSON (Result(..), decode)
 
 main = do
   args <- getArgs
@@ -57,12 +58,30 @@ startInteractive = do
 endInteractive :: IO ()  
 endInteractive = sayLine "Godbye!"      
   
+-- this is just getting bad now                 
 listCommand :: Client -> IO ()  
 listCommand c = do  
   (res,resp) <- getResponse c gaugesR
-  say $ case res of 
-    CurlOK ->  displayResult (decode resp :: Result GaugesSummary)
-    _      -> "Failed to download information about gauges."
+  case res of 
+    CurlOK ->  (cacheAndReturn (decoded resp)) >>= \t -> say (displayResult t) -- displayResult (decode resp :: Result GaugesSummary)
+    _      ->  say "Failed to download information about gauges."
+    where 
+      decoded :: String -> Result GaugesSummary
+      decoded s = decode s :: Result GaugesSummary
+      cacheData (Ok gs) = map (\t -> (title t, gaugeId t)) (summary gs)
+      cacheData (Error _) = []
+      cacheAndReturn :: Result GaugesSummary -> IO (Result GaugesSummary)
+      cacheAndReturn res  = do
+        writeGaugeCache $ cacheData res
+        return res
+        
+        
+--    where 
+--      writeSummaryAsCache :: GaugesSummary -> IO GaugesSummary
+--      writeSummaryAsCache gs = do
+--        writeGaugeCache $ map (\t -> (title t, id t)) (summary gs)
+--        return gs
+
   
 
 -- this is pretty disgusting me thinks?

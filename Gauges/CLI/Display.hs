@@ -10,5 +10,5 @@ class Displayable a where
   display :: a -> String
     
 displayResult :: Displayable a => Result a -> String
-displayResult (Ok a) = display a
+displayResult (Ok a) = display a ++ "\n"
 displayResult (Error s) = s

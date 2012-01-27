@@ -10,7 +10,7 @@ import Text.JSON (JSON(..), JSValue(..), fromJSObject, Result)
 import Control.Applicative (Applicative(..), Alternative(..), liftA2, (<$>))
 
 newtype GaugesSummary = GaugesSummary { summary :: [GaugeSummary] } deriving (Show)
-data GaugeSummary = GaugeSummary { id :: String, 
+data GaugeSummary = GaugeSummary { gaugeId :: String, 
                                    title :: String, 
                                    stats :: GaugeSummaryStats 
                                  } deriving (Show)
