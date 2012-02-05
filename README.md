@@ -53,6 +53,8 @@ The `list` command prints the names and current view/people tallies for all of y
 
 	> list
 	Blog views: 123 people: 456
+	Website views: 789 people: 123
+	Admin views: 456 people: 123
 
 In order to use any of the commands that take gauge names as arguments you must first run `list`. Because the Gauges API requires use of a String representation of a [BSON ObjectID](http://www.mongodb.org/display/DOCS/Object+IDs) for most of the interesting calls, `gauges` keeps a cache of gauge name, gauge id pairs. This cache is used to lookup information by gauge name (gauge names are case insensitive). If you run a command that takes a gauge name and it reports that the gauge is not found, try running `list` again. 
 
