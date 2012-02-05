@@ -29,9 +29,12 @@ You can build hs-gauges using `cabal`, which is provided as part of the Haskell 
 	$ git clone https://github.com/jrwest/hs-gauges.git
 	$ cd hs-gauges
 
-Then build the project:
+Then configure and build the project:
 
+        $ cabal configure
+        ...
 	$ cabal build
+	...
 
 If the build is successful, the CLI binary can be found at `dist/build/Gauges/gauges`. You can run it directly from there or you can move this binary to some directory that is on your `PATH`, it doesn't need any of the other files in the `dist/build/Gauges` directory.
 
