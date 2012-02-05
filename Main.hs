@@ -9,10 +9,10 @@ import Gauges.CLI.Credentials (credentialPath,
 import Gauges.CLI.Interact (sayLine, saysLine, say, ask, prompt)
 import Gauges.CLI.Display (Displayable(..), displayResult)
 import Gauges.CLI.Help (help, interactiveHelp, unknownCmd)
-import Gauges.CLI.GaugeCache (writeGaugeCache)
+import Gauges.CLI.GaugeCache (writeGaugeCache, readGaugeId)
 import Gauges.API.Client (Client, createClient, getResponse)  
-import Gauges.API.Resources (gaugesR)
-import Gauges.API.Data (GaugesSummary(summary), GaugeSummary(title,gaugeId))
+import Gauges.API.Resources (ResourceId, gaugesR, gaugeTrafficR)
+import Gauges.API.Data (GaugesSummary(summary), GaugeSummary(title,gaugeId), GaugeTraffic(total,history))
 import System.Directory (doesFileExist)
 import System (getArgs)
 import Network.Curl.Code (CurlCode(..))
@@ -30,8 +30,9 @@ main = do
 runAuthorized :: Client -> [String] -> String -> IO ()
 runAuthorized cl command help = do
   case command of 
-    ["list"] -> listCommand cl
-    _        -> sayLine help
+    ["list"]          -> listCommand cl
+    "traffic":name:_  -> trafficCommand cl name
+    _                 -> sayLine help
     
 runInteractive :: Client -> IO ()
 runInteractive cl = do
@@ -75,6 +76,25 @@ listCommand c = do
         writeGaugeCache $ cacheData res
         return res
         
+trafficCommand :: Client -> String -> IO ()
+trafficCommand cl gaugeName = do
+  mbGaugeId <- readGaugeId gaugeName
+  maybe (gaugeNotFound gaugeName) (showTraffic cl) mbGaugeId
+  
+showTraffic :: Client -> ResourceId -> IO ()  
+showTraffic cl gaugeId = do
+  (res,resp) <- getResponse cl $ gaugeTrafficR gaugeId
+  case res of 
+    CurlOK -> say $ displayResult $ decoded resp
+    _      -> say "failed to download traffic for gauge"
+    where
+      decoded s = decode s :: Result GaugeTraffic  
+      
+  
+gaugeNotFound :: String -> IO ()
+gaugeNotFound name = do
+  putStrLn $ "could not find gauge: " ++ name
+  putStrLn "Either the gauge does not exist or the gauge cache needs to be refreshed. Run \"list\" and try again."
         
 -- this is pretty disgusting me thinks?
 readClient :: IO Client 
@@ -93,7 +113,6 @@ readClient = do
          
 newClient :: IO String
 newClient = do
-  ask "You have not setup an API Key. Please enter one: "
-         
+  ask "You have not setup an API Key. Please enter one: "         
          
      

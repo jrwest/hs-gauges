@@ -2,20 +2,29 @@ module Gauges.API.Data
        (
          GaugesSummary(..),
          GaugeSummary(..),
-         GaugeSummaryStats(..)
+         GaugeViewStats(..),
+         GaugeTraffic(..)
        ) where
 
 import Gauges.CLI.Display (Displayable(..))
 import Text.JSON (JSON(..), JSValue(..), fromJSObject, Result)
 import Control.Applicative (Applicative(..), Alternative(..), liftA2, (<$>))
 
+data GaugeViewStats = GaugeViewStats { views :: Int, people :: Int } deriving (Show)
+data DatedGaugeViewStats = DatedGaugeViewStats { date :: String, dateStats :: GaugeViewStats }
+
+-- Data Representing Summary of All Gauges Belonging to an Account
 newtype GaugesSummary = GaugesSummary { summary :: [GaugeSummary] } deriving (Show)
 data GaugeSummary = GaugeSummary { gaugeId :: String, 
                                    title :: String, 
-                                   stats :: GaugeSummaryStats 
+                                   stats :: GaugeViewStats 
                                  } deriving (Show)
-data GaugeSummaryStats = GaugeSummaryStats { views :: Int, people :: Int } deriving (Show)
 
+
+-- Data Representing Traffic (by month total & history) for a Single Gauge
+data GaugeTraffic = GaugeTraffic { total :: GaugeViewStats,
+                                   history :: [DatedGaugeViewStats] }
+                                   
 -- JSON Instances
 instance JSON GaugesSummary where
   showJSON = error "not showing JSON"
@@ -39,9 +48,9 @@ instance JSON GaugeSummary where
       summaryData = (aLookup "today" obj) >>= readJSON
   readJSON _            = error "not an object"
 
-instance JSON GaugeSummaryStats where
+instance JSON GaugeViewStats where
   showJSON gs = error "no need to show json"
-  readJSON (JSObject o) = liftA2 GaugeSummaryStats viewsData peopleData
+  readJSON (JSObject o) = liftA2 GaugeViewStats viewsData peopleData
     where
       obj = fromJSObject o
       viewsData :: Result Int
@@ -49,7 +58,24 @@ instance JSON GaugeSummaryStats where
       peopleData :: Result Int
       peopleData = (aLookup "people" obj) >>= readJSON
   readJSON _            = fail "expected object"
+  
+instance JSON DatedGaugeViewStats where  
+  showJSON dgs = error "no need to show json"
+  readJSON (JSObject o) = liftA2 DatedGaugeViewStats date stats
+    where
+      date :: Result String      
+      date = (aLookup "date" $ fromJSObject o) >>= readJSON
+      stats :: Result GaugeViewStats
+      stats = readJSON $ JSObject o
      
+instance JSON GaugeTraffic where
+  showJSON gt = error "no need to show json"                
+  readJSON (JSObject o) = liftA2 GaugeTraffic totalData historyData
+    where
+      obj = fromJSObject o
+      totalData = readJSON $ JSObject o
+      historyData :: Result [DatedGaugeViewStats]
+      historyData = (aLookup "traffic" obj) >>= readJSONs
 
 -- Displayable Instances
 
@@ -60,9 +86,18 @@ instance Displayable GaugesSummary where
 instance Displayable GaugeSummary where  
   display gs = (title gs) ++ " " ++ (display $ stats gs)
   
-instance Displayable GaugeSummaryStats where  
+instance Displayable GaugeViewStats where  
   display gss = "views: " ++ (show $ views gss) ++ " people: " ++ (show $ people gss)
   
+instance Displayable DatedGaugeViewStats where  
+  display gss = (date gss) ++ " | " ++ display (dateStats gss)
+  
+instance Displayable GaugeTraffic where
+  display gt = historyText ++ "\ntotal | " ++ totalText
+    where
+      historyText = unlines $ map display (history gt)
+      totalText = display $ total gt
+
 
 -- Helper Functions
 

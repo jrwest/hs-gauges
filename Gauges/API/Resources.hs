@@ -6,6 +6,7 @@ module Gauges.API.Resources
          ResourceId,
          gaugesR,
          gaugeR,
+         gaugeTrafficR,
          clientsR,
          clientR,
          meR
@@ -17,7 +18,7 @@ import Gauges.API.Requestable
 newtype ResourceCollection = ResourceCollection ResourceName deriving (Show,Eq)
 
 data Resource = Resource ResourceCollection ResourceId deriving (Show,Eq)
---data SubResource = SubResource Resource ResourceName
+data SubResource = SubResource Resource ResourceName
   
 type ResourceName = String
 type ResourceId = String
@@ -34,6 +35,9 @@ clientsR = ResourceCollection "clients"
 gaugeR :: ResourceId -> Resource
 gaugeR id = Resource gaugesR id
 
+gaugeTrafficR :: ResourceId -> SubResource
+gaugeTrafficR id = SubResource (gaugeR id) "traffic"
+
 clientR :: ResourceId -> Resource
 clientR id = Resource clientsR id
 
@@ -44,6 +48,8 @@ instance Requestable ResourceCollection where
 instance Requestable Resource where  
   pathParts (Resource (ResourceCollection colName) resName) = [colName, resName]
   
+instance Requestable SubResource where
+  pathParts (SubResource (Resource (ResourceCollection colName) resName) sResName) = [colName, resName, sResName]
 
 -- Fetchable Instances  
 instance Fetchable ResourceCollection where  
@@ -52,4 +58,7 @@ instance Fetchable ResourceCollection where
 instance Fetchable Resource where  
   query _ = []
   
+-- add support for date, etc option
+instance Fetchable SubResource where  
+  query _ = []
 

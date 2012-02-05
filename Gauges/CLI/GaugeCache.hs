@@ -1,6 +1,7 @@
 module Gauges.CLI.GaugeCache 
        (
-         writeGaugeCache
+         writeGaugeCache,
+         readGaugeId
        ) where
 
 
@@ -29,7 +30,7 @@ writeGaugeCache cacheInfo = do
     cacheLine :: (String,String) -> String
     cacheLine (title,id) = title ++ ":" ++ id
     
-        
+-- can generalize this to any monad or monad trans?
 readGaugeId :: String -> IO (Maybe String)
 readGaugeId name = do                                   
   cache <- readGaugeCache
