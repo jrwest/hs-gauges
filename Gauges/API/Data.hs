@@ -7,6 +7,7 @@ module Gauges.API.Data
        ) where
 
 import Gauges.CLI.Display (Displayable(..))
+import Gauges.CLI.Spark (Sparkable(..))
 import Text.JSON (JSON(..), JSValue(..), fromJSObject, Result)
 import Control.Applicative (Applicative(..), Alternative(..), liftA2, (<$>))
 
@@ -98,6 +99,13 @@ instance Displayable GaugeTraffic where
       historyText = unlines $ map display (history gt)
       totalText = display $ total gt
 
+
+-- Sparkable Instances
+instance Sparkable GaugeTraffic where      
+  sparks gt = [("views",viewSpark),("people",peopleSpark)]
+    where
+      (viewSpark,peopleSpark) = unzip $ map ((\s -> (views s, people s)) . dateStats) $ history gt
+      
 
 -- Helper Functions
 

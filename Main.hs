@@ -8,6 +8,7 @@ import Gauges.CLI.Credentials (credentialPath,
                                writeCredential)
 import Gauges.CLI.Interact (sayLine, saysLine, say, ask, prompt)
 import Gauges.CLI.Display (Displayable(..), displayResult)
+import Gauges.CLI.Spark (Sparkable(sparkResult))
 import Gauges.CLI.Help (help, interactiveHelp, unknownCmd)
 import Gauges.CLI.GaugeCache (writeGaugeCache, readGaugeId)
 import Gauges.API.Client (Client, createClient, getResponse)  
@@ -30,9 +31,9 @@ main = do
 runAuthorized :: Client -> [String] -> String -> IO ()
 runAuthorized cl command help = do
   case command of 
-    ["list"]          -> listCommand cl
-    "traffic":name:_  -> trafficCommand cl name
-    _                 -> sayLine help
+    ["list"]             -> listCommand cl
+    "traffic":name:opts  -> trafficCommand cl name opts
+    _                    -> sayLine help
     
 runInteractive :: Client -> IO ()
 runInteractive cl = do
@@ -76,19 +77,23 @@ listCommand c = do
         writeGaugeCache $ cacheData res
         return res
         
-trafficCommand :: Client -> String -> IO ()
-trafficCommand cl gaugeName = do
+trafficCommand :: Client -> String -> [String] -> IO ()
+trafficCommand cl gaugeName opts = do
   mbGaugeId <- readGaugeId gaugeName
-  maybe (gaugeNotFound gaugeName) (showTraffic cl) mbGaugeId
+  maybe (gaugeNotFound gaugeName) (showTraffic cl opts) mbGaugeId
   
-showTraffic :: Client -> ResourceId -> IO ()  
-showTraffic cl gaugeId = do
+showTraffic :: Client -> [String] -> ResourceId -> IO ()  
+showTraffic cl opts gaugeId = do
   (res,resp) <- getResponse cl $ gaugeTrafficR gaugeId
   case res of 
-    CurlOK -> say $ displayResult $ decoded resp
+    CurlOK -> printFun opts $ decoded resp
     _      -> say "failed to download traffic for gauge"
     where
       decoded s = decode s :: Result GaugeTraffic  
+      printFun :: [String] -> Result GaugeTraffic -> IO ()
+      printFun opts = if any (=="--spark") opts
+                      then sparkResult
+                      else say . displayResult
       
   
 gaugeNotFound :: String -> IO ()
