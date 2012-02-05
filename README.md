@@ -86,7 +86,8 @@ Some `gauges` commands integrate with [Spark](https://github.com/holman/spark). 
 
 The only command that currently supports this is `traffic` which optionally takes the `--spark` switch after the gauge name. 
 
-	$  gauges traffic blog --spark                                                                                                                                                                  	...
+	$  gauges traffic blog --spark       
+	...
 	Showing spark for: views
 	▁▂▅▆▆▁▃▅▅▃▆▇▇▄▅▇█▃▃▁▂▇█▇▁▃▂
 	Showing spark for: people
