@@ -31,8 +31,8 @@ You can build hs-gauges using `cabal`, which is provided as part of the Haskell 
 
 Then configure and build the project:
 
-        $ cabal configure
-        ...
+	$ cabal configure
+	...
 	$ cabal build
 	...
 
