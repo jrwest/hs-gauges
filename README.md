@@ -33,7 +33,7 @@ Then build the project:
 
 	$ cabal build
 
-If the build is successful, the CLI binary can be found at `dist/build/Gauges/gauges`. You can move this binary to some directory that is on your `PATH`, it doesn't need any of the other files in the `dist/build/Gauges` directory.
+If the build is successful, the CLI binary can be found at `dist/build/Gauges/gauges`. You can run it directly from there or you can move this binary to some directory that is on your `PATH`, it doesn't need any of the other files in the `dist/build/Gauges` directory.
 
 ## Usage 
 
