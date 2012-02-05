@@ -50,7 +50,8 @@ The first time you run any `gauges` command (besides `help`) it will ask you for
 
 The `list` command prints the names and current view/people tallies for all of your gauges.
 
-	~ $  gauges                                                                                                                                                                                       	Using credential from /Users/jrwest/.gauges
+	~ $  gauges                                                                                                                                                                                       	
+	Using credential from /Users/jrwest/.gauges
 	Welcome to Gauges Haskell CLI
 	type "help" and press ENTER to see what's up
 
