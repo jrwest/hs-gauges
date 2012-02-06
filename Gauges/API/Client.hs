@@ -44,7 +44,7 @@ defaultOpts c = [headers]
 
 
 gaugesURL :: Fetchable r => r -> String
-gaugesURL r = gaugesBaseURL ++ "/" ++ (path r)
+gaugesURL r = gaugesBaseURL ++ "/" ++ (path r) ++ "?" ++ queryString r
 
 gaugesBaseURL    = "https://secure.gaug.es"
 gaugesHeaderName = "X-Gauges-Token"

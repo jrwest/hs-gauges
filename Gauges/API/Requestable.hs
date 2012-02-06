@@ -13,3 +13,5 @@ class Requestable a where
 
 class (Requestable a) => Fetchable a where
   query :: a -> [(String,String)]           
+  queryString :: a -> String
+  queryString a = intercalate "&" [ key ++ "=" ++ value | (key,value) <- query a ]

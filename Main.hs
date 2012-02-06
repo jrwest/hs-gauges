@@ -16,6 +16,10 @@ import Gauges.API.Resources (ResourceId, gaugesR, gaugeTrafficR)
 import Gauges.API.Data (GaugesSummary(summary), GaugeSummary(title,gaugeId), GaugeTraffic(total,history))
 import System.Directory (doesFileExist)
 import System (getArgs)
+import System.Locale (defaultTimeLocale)
+import Data.Time.Clock (getCurrentTime)
+import Data.Time.Format (formatTime)
+import Data.List (intercalate)
 import Network.Curl.Code (CurlCode(..))
 import Text.JSON (Result(..), decode)
 
@@ -84,7 +88,8 @@ trafficCommand cl gaugeName opts = do
   
 showTraffic :: Client -> [String] -> ResourceId -> IO ()  
 showTraffic cl opts gaugeId = do
-  (res,resp) <- getResponse cl $ gaugeTrafficR gaugeId
+  date <- getMonthBasedDate opts
+  (res,resp) <- getResponse cl $ gaugeTrafficR gaugeId date
   case res of 
     CurlOK -> printFun opts $ decoded resp
     _      -> say "failed to download traffic for gauge"
@@ -120,4 +125,56 @@ newClient :: IO String
 newClient = do
   ask "You have not setup an API Key. Please enter one: "         
          
-     
+getMonthBasedDate :: [String] -> IO String    
+getMonthBasedDate opts = do
+  buildMonthBasedDate (mbMonth opts) (mbYear opts)
+  where
+    -- todo: this can be cleaned up/abstracted
+    mbMonth opts = case break hasMonthSwitch opts of
+      (_, _:month:_) -> Just month
+      _              -> Nothing
+    mbYear opts  = case break hasYearSwitch opts of
+      (_, _:year:_) -> Just year
+      _             -> Nothing
+    hasYearSwitch s  = s == "--year" || s == "-y"
+    hasMonthSwitch s = s == "--month" || s == "-m"
+    
+buildMonthBasedDate :: Maybe String -> Maybe String -> IO String     
+buildMonthBasedDate mbMonth mbYear = do
+  now <- getCurrentTime
+  return $ intercalate "-" [(year (defaultYear now) mbYear), (month (defaultMonth now) mbMonth), "01"] 
+  where  
+    year def mbY      = maybe def (prepedYear def) mbY
+    month def mbM     = maybe def (prepedMonth def) mbM
+    prepedYear def y  = if validYear y 
+                        then buildYear y
+                        else def
+    prepedMonth def m = if validMonth m                        
+                        then buildMonth m
+                        else def
+    defaultYear now   = formatTime defaultTimeLocale "%Y" now
+    defaultMonth now  = formatTime defaultTimeLocale "%m" now
+    
+validYear :: String -> Bool
+validYear yearStr = (length yearStr == 2 || length yearStr == 4) && onlyNumbers yearStr
+
+buildYear :: String -> String
+buildYear yearStr
+  | (length yearStr) == 2 = "20" ++ yearStr
+  | otherwise             = yearStr
+                            
+validMonth :: String -> Bool                            
+validMonth monthStr = (length monthStr == 1 || length monthStr == 2) && onlyNumbers monthStr
+
+buildMonth :: String -> String
+buildMonth monthStr 
+  | strLength == 1                          = '0':monthStr
+  | strLength == 2 && (head monthStr > '1') = '0':(tail monthStr) -- nasty adjustment for human error
+  | otherwise                               = monthStr
+  where 
+    strLength = length monthStr
+    
+onlyNumbers :: String -> Bool
+onlyNumbers s = (all (>='0') s) && (all (<='9') s)
+                      
+    

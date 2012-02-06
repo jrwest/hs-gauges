@@ -15,13 +15,20 @@ module Gauges.API.Resources
 
 import Gauges.API.Requestable
 
-newtype ResourceCollection = ResourceCollection ResourceName deriving (Show,Eq)
+newtype ResourceCollection = ResourceCollection { resourceName :: ResourceName } deriving (Show,Eq)
 
-data Resource = Resource ResourceCollection ResourceId deriving (Show,Eq)
-data SubResource = SubResource Resource ResourceName
+data Resource = Resource { resourceCollection :: ResourceCollection,
+                           resourceId         :: ResourceId 
+                         } deriving (Show,Eq)
+data SubResource = SubResource { parentResource  :: Resource, 
+                                 subResourceName :: ResourceName, 
+                                 subResourceDate :: ResourceDate 
+                               } deriving (Show,Eq)
+                               
   
 type ResourceName = String
 type ResourceId = String
+type ResourceDate = String
 
 meR :: ResourceCollection
 meR = ResourceCollection "me"
@@ -35,8 +42,8 @@ clientsR = ResourceCollection "clients"
 gaugeR :: ResourceId -> Resource
 gaugeR id = Resource gaugesR id
 
-gaugeTrafficR :: ResourceId -> SubResource
-gaugeTrafficR id = SubResource (gaugeR id) "traffic"
+gaugeTrafficR :: ResourceId -> ResourceDate -> SubResource
+gaugeTrafficR id date = SubResource (gaugeR id) "traffic" date
 
 clientR :: ResourceId -> Resource
 clientR id = Resource clientsR id
@@ -49,7 +56,7 @@ instance Requestable Resource where
   pathParts (Resource (ResourceCollection colName) resName) = [colName, resName]
   
 instance Requestable SubResource where
-  pathParts (SubResource (Resource (ResourceCollection colName) resName) sResName) = [colName, resName, sResName]
+  pathParts sr = [resourceName . resourceCollection . parentResource $ sr, resourceId . parentResource $ sr, subResourceName sr] 
 
 -- Fetchable Instances  
 instance Fetchable ResourceCollection where  
@@ -60,5 +67,4 @@ instance Fetchable Resource where
   
 -- add support for date, etc option
 instance Fetchable SubResource where  
-  query _ = []
-
+  query sr = [("date", subResourceDate sr)]  

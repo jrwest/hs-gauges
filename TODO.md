@@ -2,7 +2,6 @@
 * Refactor code that deals with directory and files into some sort of util module
 * Need some sort of command structure but need to implement a few more first
 * Commands and Such 
-  * Add month option to traffic command
   * List history for single gauge by hour using recent hours
   * List history for single gauge by month using recent months
   * Change gauge name

@@ -72,7 +72,7 @@ In *Interactive Mode* use the `help` command
 
 ### Displaying Traffic for a Gauge
 
-The `traffic [GAUGE NAME] [--spark]` command lists the people/view tallies for the current month by day and in total. 
+The `traffic [GAUGE NAME] [--spark] [--month/-m [M]M] [--year/-y] [YY]YY]` command lists the people/view tallies for the current month by day and in total. 
 
 	$ gauges traffic blog
 	...
@@ -88,12 +88,13 @@ The `traffic [GAUGE NAME] [--spark]` command lists the people/view tallies for t
 
 Some `gauges` commands integrate with [Spark](https://github.com/holman/spark). In order to use the integration you will need it installed. 
 
-The only command that currently supports this is `traffic` which optionally takes the `--spark` switch after the gauge name. 
+The only command that currently supports this is `traffic` which optionally takes the `--spark` switch.
 
-	$  gauges traffic blog --spark       
-	...
+	$  gauges traffic blog --month 1 --spark                                                                                                           
+	Using credential from /Users/jrwest/.gauges
 	Showing spark for: views
-	▁▂▅▆▆▁▃▅▅▃▆▇▇▄▅▇█▃▃▁▂▇█▇▁▃▂
+	▂▂█▂▁▃▁▁▆▄▅▂▁▁▃▄▅▄▃▄▄▂▃▁▃▃▂▁▃▅▄
 	Showing spark for: people
-	▁▂▅▆▆▁▃▅▅▃▆▇▇▄▅▇█▃▃▁▂▇█▇▁▃▂
+	▂▃▅▃▂▄▁▁▅▆█▃▂▁▂▅▅▅▄▄▃▃▄▁▄▅▂▁▃▅▆
+
 
